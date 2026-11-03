@@ -28,6 +28,12 @@ public class AccountService {
         return users.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
     public Views.Person profile(String username) { return Views.Person.of(current(username)); }
+    public Views.Person customer(String username, UUID id) {
+        requireAgent(current(username));
+        User u=users.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cliente não encontrado."));
+        if(u.role!=Role.CLIENTE) throw bad("Usuário não é cliente.");
+        return Views.Person.of(u);
+    }
     public Views.Person update(String username, Requests.Profile p) {
         User u=current(username);
         if (u.role!=Role.CLIENTE) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Perfil exclusivo de cliente.");

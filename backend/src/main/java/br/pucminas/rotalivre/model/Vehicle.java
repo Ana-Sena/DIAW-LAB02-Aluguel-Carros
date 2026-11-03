@@ -7,7 +7,7 @@ public class Vehicle {
     @Id @GeneratedValue(strategy=GenerationType.UUID) public UUID id;
     @Column(nullable=false, unique=true) public String registration;
     @Column(nullable=false, unique=true, length=7) public String plate;
-    @Column(nullable=false) public int year;
+    @Column(name="manufacture_year",nullable=false) public int year;
     @Column(nullable=false) public String brand;
     @Column(nullable=false) public String model;
     @Column(nullable=false, precision=12, scale=2) public BigDecimal dailyRate;

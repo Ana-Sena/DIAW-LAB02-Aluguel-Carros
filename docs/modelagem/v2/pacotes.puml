@@ -1,0 +1,49 @@
+@startuml
+title Pacotes finais — v2
+package "frontend/src" {
+  [main.jsx — Views React] as view
+  [api.js — cliente HTTP / CSRF] as api
+}
+package "br.pucminas.rotalivre" {
+  package config {
+    [SecurityConfig]
+    [DemoData]
+  }
+  package controller {
+    [AuthController]
+    [RentalController]
+    [ApiErrors]
+  }
+  package dto {
+    [Requests]
+    [Views]
+  }
+  package service {
+    [AccountService]
+    [RentalService]
+  }
+  package repository {
+    [UserRepository]
+    [VehicleRepository]
+    [RentalRepository]
+  }
+  package model {
+    [User]
+    [Income]
+    [Vehicle]
+    [Rental]
+    [Role]
+  }
+}
+database "Supabase PostgreSQL" as db
+view --> api
+api --> controller : REST / JSON / sessão + CSRF
+config ..> repository
+controller --> service
+controller ..> dto
+service --> repository
+service ..> dto
+service --> model
+repository --> model
+repository --> db : Hibernate / JDBC + TLS
+@enduml

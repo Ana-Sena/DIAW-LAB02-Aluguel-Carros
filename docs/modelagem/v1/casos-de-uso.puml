@@ -1,0 +1,32 @@
+@startuml
+left to right direction
+actor Cliente
+actor Agente
+actor Empresa
+actor Banco
+Agente <|-- Empresa
+Agente <|-- Banco
+rectangle "Sistema de Aluguel de Carros — v1" {
+  usecase "Cadastrar e autenticar" as UC1
+  usecase "Manter perfil de cliente" as UC2
+  usecase "Criar / consultar / modificar pedido" as UC3
+  usecase "Cancelar pedido" as UC4
+  usecase "Avaliar financeiramente pedido" as UC5
+  usecase "Executar contrato" as UC6
+  usecase "Conceder crédito" as UC7
+  usecase "Consultar / cadastrar automóveis" as UC8
+}
+Cliente --> UC1
+Agente --> UC1
+Cliente --> UC2
+Cliente --> UC3
+Cliente --> UC4
+Agente --> UC3
+Agente --> UC5
+Cliente --> UC6
+Banco --> UC7
+UC7 ..> UC5 : <<extend>>
+Cliente --> UC8 : consultar
+Agente --> UC8
+note bottom of UC3 : A criação é exclusiva do cliente.
+@enduml

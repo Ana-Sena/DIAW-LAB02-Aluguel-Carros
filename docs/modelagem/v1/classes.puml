@@ -1,0 +1,47 @@
+@startuml
+title Modelo conceitual inicial — v1
+class Usuario {
+  usuario: String
+  senha: String
+  nome: String
+}
+class Cliente {
+  rg: String
+  cpf: String
+  endereco: String
+  profissao: String
+}
+class Agente
+class Empresa
+class Banco
+class Rendimento {
+  empregador: String
+  valor: Decimal
+}
+class Automovel {
+  matricula: String
+  ano: Integer
+  marca: String
+  modelo: String
+  placa: String
+}
+class Pedido {
+  retirada: Date
+  devolucao: Date
+  status: String
+}
+class Contrato
+class Credito
+Usuario <|-- Cliente
+Usuario <|-- Agente
+Agente <|-- Empresa
+Agente <|-- Banco
+Cliente "1" *-- "0..3" Rendimento
+Cliente "1" -- "0..*" Pedido
+Pedido "0..*" -- "1" Automovel
+Pedido "1" -- "0..1" Contrato
+Agente "0..1" -- "0..*" Pedido : avalia
+Contrato "1" -- "0..1" Credito
+Banco "1" -- "0..*" Credito : concede
+Automovel "0..*" -- "1" Usuario : proprietário
+@enduml

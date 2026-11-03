@@ -1,0 +1,20 @@
+@startuml
+title Ciclo de vida do pedido — v2
+[*] --> EM_ANALISE : cliente cria
+EM_ANALISE --> APROVADO : agente aprova
+EM_ANALISE --> REPROVADO : agente reprova
+APROVADO --> EM_ANALISE : cliente ou agente altera
+REPROVADO --> EM_ANALISE : cliente ou agente altera
+EM_ANALISE --> EM_ANALISE : cliente ou agente altera
+APROVADO --> CONTRATADO : cliente confirma / veículo livre no período
+EM_ANALISE --> CANCELADO : cliente cancela
+APROVADO --> CANCELADO : cliente cancela
+REPROVADO --> CANCELADO : cliente cancela
+CONTRATADO --> [*]
+CANCELADO --> [*]
+note right of CONTRATADO
+Gera número e data de contrato.
+Atualiza proprietário conforme ownershipType.
+Datas sobrepostas são bloqueadas com lock no veículo.
+end note
+@enduml

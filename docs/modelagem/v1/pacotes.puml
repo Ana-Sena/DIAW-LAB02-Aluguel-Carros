@@ -1,0 +1,16 @@
+@startuml
+title Visão lógica inicial — v1
+package "Construção dinâmica de páginas web" {
+  [React + Vite] as view
+}
+package "Gestão de pedidos e contratos" {
+  [Controller MVC] as controller
+  [Serviços de domínio] as service
+  [Persistência] as repository
+}
+database "Supabase PostgreSQL" as db
+view --> controller : HTTP / sessão
+controller --> service
+service --> repository
+repository --> db : JDBC
+@enduml

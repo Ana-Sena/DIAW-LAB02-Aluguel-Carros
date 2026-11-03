@@ -1,0 +1,92 @@
+@startuml
+title Modelo de implementação final — v2 (nomes do código Java)
+enum Role {
+  CLIENTE
+  EMPRESA
+  BANCO
+}
+class User {
+  id: UUID
+  username: String
+  passwordHash: String
+  role: Role
+  name: String
+  cpf: String
+  rg: String
+  address: String
+  profession: String
+}
+class Income <<Embeddable>> {
+  employer: String
+  amount: BigDecimal
+}
+class Vehicle {
+  id: UUID
+  registration: String
+  plate: String
+  year: int
+  brand: String
+  model: String
+  dailyRate: BigDecimal
+  version: long
+}
+class Rental {
+  id: UUID
+  startDate: LocalDate
+  endDate: LocalDate
+  status: Status
+  ownershipType: Role
+  total: BigDecimal
+  notes: String
+  opinion: String
+  creditAmount: BigDecimal
+  installments: Integer
+  contractNumber: UUID
+  contractedAt: Instant
+  createdAt: Instant
+  version: long
+}
+enum Status {
+  EM_ANALISE
+  APROVADO
+  REPROVADO
+  CONTRATADO
+  CANCELADO
+}
+class AccountService {
+  register()
+  profile()
+  update()
+  delete()
+  customer()
+}
+class RentalService {
+  cars()
+  addCar()
+  list()
+  get()
+  create()
+  update()
+  cancel()
+  evaluate()
+  contract()
+}
+User --> Role
+User "1" *-- "0..3" Income
+Vehicle "0..*" --> "1" User : owner
+Rental "0..*" --> "1" User : customer
+Rental "0..*" --> "0..1" User : evaluator
+Rental "0..*" --> "0..1" User : bank (BANCO)
+Rental "0..*" --> "1" Vehicle
+Rental --> Status
+Rental --> Role : ownershipType
+AccountService ..> User
+RentalService ..> Rental
+RentalService ..> Vehicle
+RentalService ..> AccountService
+note bottom of Rental
+Contrato e crédito opcionais são campos do pedido.
+contractNumber + contractedAt = contrato executado.
+bank + creditAmount + installments = crédito concedido.
+end note
+@enduml

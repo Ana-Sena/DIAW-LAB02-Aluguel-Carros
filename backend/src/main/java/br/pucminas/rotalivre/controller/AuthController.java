@@ -17,6 +17,7 @@ public class AuthController {
     @PostMapping("/auth/register") @ResponseStatus(HttpStatus.CREATED)
     public Views.Owner register(@Valid @RequestBody Requests.Registration r) { return accounts.register(r); }
     @GetMapping("/auth/me") public Views.Person me(Principal p) { return accounts.profile(p.getName()); }
+    @GetMapping("/clients/{id}") public Views.Person customer(Principal p, @PathVariable java.util.UUID id) { return accounts.customer(p.getName(),id); }
     @PutMapping("/clients/me") public Views.Person update(Principal p, @Valid @RequestBody Requests.Profile r) { return accounts.update(p.getName(),r); }
     @DeleteMapping("/clients/me") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(Principal p, HttpServletRequest request) { accounts.delete(p.getName()); request.getSession().invalidate(); }
