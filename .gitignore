@@ -8,5 +8,6 @@
 .vscode/
 *.log
 tmp/
+.npm-cache/
 output/
 .DS_Store
