@@ -43,8 +43,6 @@ Protótipo implementado, com testes de integração e build local. A conexão ao
 - [Testes](#-testes)
 - [Documentações utilizadas](#-documentações-utilizadas)
 - [Autores](#-autores)
-- [Contribuição](#-contribuição)
-
 
 ---
 
@@ -351,18 +349,3 @@ Outros integrantes podem ser adicionados pelo grupo com seus dados confirmados.
 
 ---
 
-## 🤝 Contribuição
-
-Veja [CONTRIBUTING.md](CONTRIBUTING.md). Use branches, alterações incrementais, verificações e Conventional Commits:
-
-```text
-feat: adiciona avaliação financeira de pedidos
-fix: impede contratação de veículo em período ocupado
-test: cobre isolamento de pedidos entre clientes
-docs: atualiza modelos UML e instruções de execução
-```
-
----
-
-
----
