@@ -44,8 +44,7 @@ Protótipo implementado, com testes de integração e build local. A conexão ao
 - [Documentações utilizadas](#-documentações-utilizadas)
 - [Autores](#-autores)
 - [Contribuição](#-contribuição)
-- [Agradecimentos](#-agradecimentos)
-- [Licença](#-licença)
+
 
 ---
 
@@ -365,14 +364,5 @@ docs: atualiza modelos UML e instruções de execução
 
 ---
 
-## 🙏 Agradecimentos
-
-À PUC Minas e ao Prof. João Paulo Carneiro Aramuni pelo enunciado, material da disciplina e template de documentação utilizado como referência.
-
----
-
-## 📄 Licença
-
-Projeto acadêmico. Nenhuma licença adicional foi definida pelos autores. O enunciado e o template fornecidos mantêm sua autoria original.
 
 ---
