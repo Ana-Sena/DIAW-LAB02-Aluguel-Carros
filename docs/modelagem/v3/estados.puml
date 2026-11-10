@@ -1,0 +1,25 @@
+@startuml
+title Ciclo de vida — v3
+[*] --> EM_ANALISE : cliente cria
+EM_ANALISE --> APROVADO : agente aprova / cria minuta de Contrato
+EM_ANALISE --> REPROVADO : agente reprova
+APROVADO --> EM_ANALISE : alteração / remove minuta e crédito anteriores
+REPROVADO --> EM_ANALISE : alteração
+EM_ANALISE --> EM_ANALISE : alteração
+APROVADO --> CONTRATADO : cliente confirma / Contrato.execute
+EM_ANALISE --> CANCELADO : cliente cancela
+APROVADO --> CANCELADO : cliente cancela
+REPROVADO --> CANCELADO : cliente cancela
+CONTRATADO --> [*]
+CANCELADO --> [*]
+note right of APROVADO
+Banco pode conceder ContratoCredito para a minuta.
+Empresa aprova sem conceder crédito.
+O número só é exibido após a execução do contrato.
+end note
+note right of CONTRATADO
+Contrato registra os termos aprovados e executedAt.
+Proprietário do veículo é atualizado.
+Lock no veículo impede sobreposição de períodos.
+end note
+@enduml

@@ -121,7 +121,11 @@ Interface responsiva com painel de indicadores, busca, filtros, mensagens de val
 
 O React compõe formulários, tabelas e modais. O cliente HTTP centraliza cookies, token CSRF e erros. O proxy `/api` mantém interface e API na mesma origem.
 
-No servidor MVC, **Controllers** validam DTOs, **Services** aplicam permissões e regras transacionais, e **Repositories** persistem **Models** JPA. DTOs de saída impedem exposição de hashes de senha. `Rental` reúne o pedido e os dados opcionais de contrato/crédito.
+No servidor MVC, **Controllers** validam DTOs, **Services** aplicam permissões e regras transacionais, e **Repositories** persistem **Models** JPA. Cada DTO possui seu próprio arquivo, com entradas e respostas tipadas. DTOs de saída impedem exposição de hashes de senha.
+
+`User` é a raiz da herança JPA `JOINED`, especializada em `Cliente` e `Agente`, com `Empresa` e `Banco` derivados de `Agente`. `Rental` referencia o cliente e o avaliador. A aprovação cria uma minuta de `Contrato` com os termos aprovados, e um banco pode associar um `ContratoCredito`. A confirmação do cliente executa o contrato e registra a data. As entidades possuem tabelas e relacionamentos próprios.
+
+No front-end, `main.jsx` inicializa o React e `App.jsx` compõe as páginas. `pages/` reúne as telas, `components/` contém formulários e elementos compartilhados, `hooks/useApplication.js` coordena sessão e dados, `services/api.js` centraliza HTTP e `utils/format.js` mantém a apresentação de datas e valores.
 
 Na contratação, a transação bloqueia a linha do veículo, verifica sobreposição e então registra o contrato. `@Version` detecta alterações concorrentes.
 
@@ -130,15 +134,18 @@ Na contratação, a transação bloqueia a linha do veículo, verifica sobreposi
 | Modelo | Inicial | Final |
 | --- | --- | --- |
 | Casos de uso | [Atores e funcionalidades](docs/modelagem/v1/casos-de-uso.puml) | Mantido, com regras detalhadas nos requisitos |
-| Classes | [Conceitual v1](docs/modelagem/v1/classes.puml) | [Implementação v2](docs/modelagem/v2/classes.puml) |
-| Pacotes | [Subsistemas v1](docs/modelagem/v1/pacotes.puml) | [Pacotes v2](docs/modelagem/v2/pacotes.puml) |
-| Estados | Descrição nos requisitos | [Transições v2](docs/modelagem/v2/estados.puml) |
+| Classes | [Conceitual v1](docs/modelagem/v1/classes.puml) | [Implementação v3](docs/modelagem/v3/classes.puml) |
+| Pacotes | [Subsistemas v1](docs/modelagem/v1/pacotes.puml) | [Pacotes v3](docs/modelagem/v3/pacotes.puml) |
+| Estados | Descrição nos requisitos | [Transições v3](docs/modelagem/v3/estados.puml) |
 
-As [justificativas das revisões](docs/modelagem/README.md) explicam a implementação por papéis e o agrupamento de contrato/crédito no pedido.
+O histórico das revisões inclui a v2 e o alinhamento da v3 ao feedback sobre entidades, componentes e DTOs. [Justificativas e versões](docs/modelagem/README.md).
 
 ---
 
 ## 🔧 Instalação e Execução
+
+> [!IMPORTANT]
+> Quem já configurou o Supabase deve parar a API e executar `backend/src/main/resources/db/migrations/V3__domain_entities.sql` no SQL Editor antes de iniciar esta versão. A migração preserva contas, pedidos e contratos existentes. [Passo a passo](docs/migracao-v3.md).
 
 ### Pré-requisitos
 
@@ -253,20 +260,31 @@ A sessão reside na memória da API e exige novo login após reinício. Múltipl
 │       │   └── service/          # Regras e autorização
 │       ├── main/resources/
 │       │   ├── db/schema.sql     # Banco Supabase
+│       │   ├── db/migrations/    # Atualização dos dados existentes
 │       │   └── application*.properties
 │       └── test/                 # Integração
 ├── frontend/
 │   ├── public/logo.svg
-│   ├── src/                      # Componentes, HTTP e estilos
+│   ├── src/
+│   │   ├── main.jsx              # Inicialização do React
+│   │   ├── App.jsx               # Composição das páginas
+│   │   ├── pages/                # Login, painel, pedidos, frota e perfil
+│   │   ├── components/           # Formulários, layout e componentes comuns
+│   │   ├── hooks/                # Sessão e coordenação da aplicação
+│   │   ├── services/             # Cliente HTTP e CSRF
+│   │   └── utils/                # Datas, valores e rótulos
 │   ├── package-lock.json
 │   └── vite.config.js
 ├── docs/
 │   ├── modelagem/v1/             # UML inicial
-│   ├── modelagem/v2/             # UML revisado
+│   ├── modelagem/v2/             # UML da implementação anterior
+│   ├── modelagem/v3/             # UML alinhado ao feedback
+│   ├── migracao-v3.md            # Atualização do Supabase existente
 │   ├── requisitos.md
 │   ├── validacao.md
 │   └── api.md
 ├── scripts/smoke.mjs              # Teste HTTP com sessões reais
+├── scripts/database/              # Testes PostgreSQL da migração
 ├── CONTRIBUTING.md
 ├── template_README.md
 └── README.md
@@ -314,17 +332,27 @@ Smoke HTTP aprovado: proxy, sessão, CSRF, pedido, alteração, cancelamento, an
 mvn -f backend/pom.xml test
 ```
 
-**13 cenários** JUnit/MockMvc com segurança real e H2, cobrindo autenticação, permissões, validações, cadastro, perfil, pedidos, crédito e contrato. Não exige credenciais externas.
+**28 testes** com JUnit, MockMvc e H2, organizados em testes de domínio e integração. Cobrem autenticação, permissões, validações, cadastro, perfil, pedidos, herança persistente, contratos e crédito. Os testes de domínio verificam os termos aprovados, a execução única e os limites do crédito.
 
 ### Front-end e fluxo HTTP
 
 ```bash
 npm --prefix frontend run build
 npm --prefix frontend run format:check
+npm --prefix frontend test
 node scripts/smoke.mjs
 ```
 
-O smoke exige os dois serviços e deve usar apenas o perfil demo. Reinicie a API antes de repetir. Não há suíte automatizada de navegador. Evidências e limites em [Validação](docs/validacao.md).
+Os **7 testes React** usam Vitest e Testing Library para exercitar filtros, envio de pedido, perfil incompleto, frota vazia, limite de empregadores e avaliação com crédito. O smoke exige os dois serviços e o perfil demo. Reinicie a API antes de repetir.
+
+### Migração PostgreSQL
+
+```bash
+npm --prefix scripts/database ci
+npm --prefix scripts/database test
+```
+
+Os **6 testes de migração** usam PostgreSQL embarcado com PGlite. Verificam preservação de dados, repetição segura, minutas, histórico cancelado, RLS e rollback. O GitHub Actions executa as três suítes. Evidências e limites em [Validação](docs/validacao.md).
 
 ---
 

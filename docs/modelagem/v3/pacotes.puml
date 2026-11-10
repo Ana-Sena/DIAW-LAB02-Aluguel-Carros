@@ -1,0 +1,89 @@
+@startuml
+title Pacotes — v3, separação de responsabilidades
+package "frontend/src" {
+  [main.jsx] as bootstrap
+  [App.jsx] as app
+  package pages {
+    [AuthPage]
+    [OverviewPage]
+    [OrdersPage]
+    [FleetPage]
+    [ProfilePage]
+  }
+  package components {
+    [common]
+    [layout]
+    [rentals]
+    [vehicles]
+    [clients]
+  }
+  [hooks/useApplication] as state
+  [services/api] as api
+  [utils/format] as format
+}
+package "br.pucminas.rotalivre" {
+  package controller {
+    [AuthController]
+    [RentalController]
+    [ApiErrors]
+  }
+  package dto {
+    [RegistrationRequest]
+    [ClientProfileRequest]
+    [EmploymentRequest]
+    [VehicleRequest]
+    [RentalRequest]
+    [EvaluationRequest]
+    [PersonResponse]
+    [OwnerResponse]
+    [VehicleResponse]
+    [RentalResponse]
+  }
+  package service {
+    [AccountService]
+    [RentalService]
+  }
+  package repository {
+    [UserRepository]
+    [VehicleRepository]
+    [RentalRepository]
+    [ContractRepository]
+    [CreditContractRepository]
+  }
+  package model {
+    [User]
+    [Cliente]
+    [Agente]
+    [Empresa]
+    [Banco]
+    [Income]
+    [Vehicle]
+    [Rental]
+    [Contrato]
+    [ContratoCredito]
+    [Role]
+  }
+  package config {
+    [SecurityConfig]
+    [DemoData]
+  }
+}
+database "Supabase PostgreSQL" as db
+bootstrap --> app
+app --> pages
+app --> state
+app --> components
+pages --> components
+pages --> api
+state --> api
+pages ..> format
+components ..> format
+api --> controller : HTTP / JSON / sessão + CSRF
+controller --> service
+controller ..> dto
+service --> repository
+service --> model
+repository --> model
+repository --> db : JPA / JDBC
+config ..> repository
+@enduml

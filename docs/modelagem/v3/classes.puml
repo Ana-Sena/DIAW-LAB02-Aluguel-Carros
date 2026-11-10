@@ -1,0 +1,102 @@
+@startuml
+title Modelo de implementação — v3, revisão após feedback
+abstract class User {
+  id: UUID
+  username: String
+  passwordHash: String
+  name: String
+  role: Role
+}
+class Cliente {
+  cpf: String
+  rg: String
+  address: String
+  profession: String
+  hasCompleteProfile(): boolean
+}
+abstract class Agente {
+  canOwnVehicleAs(ownershipType: Role): boolean
+}
+class Empresa
+class Banco {
+  grantCredit(contract, amount, installments): ContratoCredito
+}
+class Income <<Embeddable>> {
+  employer: String
+  amount: BigDecimal
+}
+class Vehicle {
+  id: UUID
+  registration: String
+  plate: String
+  year: int
+  brand: String
+  model: String
+  dailyRate: BigDecimal
+  version: long
+}
+class Rental {
+  id: UUID
+  startDate: LocalDate
+  endDate: LocalDate
+  status: Status
+  ownershipType: Role
+  total: BigDecimal
+  notes: String
+  opinion: String
+  createdAt: Instant
+  version: long
+}
+class Contrato {
+  id: UUID
+  ownershipType: Role
+  total: BigDecimal
+  startDate: LocalDate
+  endDate: LocalDate
+  executedAt: Instant
+  execute(when: Instant)
+}
+class ContratoCredito {
+  id: UUID
+  amount: BigDecimal
+  installments: int
+  grantedAt: Instant
+}
+enum Role {
+  CLIENTE
+  EMPRESA
+  BANCO
+}
+enum Status {
+  EM_ANALISE
+  APROVADO
+  REPROVADO
+  CONTRATADO
+  CANCELADO
+}
+User <|-- Cliente
+User <|-- Agente
+Agente <|-- Empresa
+Agente <|-- Banco
+User --> Role
+Cliente "1" *-- "0..3" Income
+Vehicle "0..*" --> "1" User : owner
+Rental "0..*" --> "1" Cliente : customer
+Rental "0..*" --> "0..1" Agente : evaluator
+Rental "0..*" --> "1" Vehicle
+Rental --> Status
+Rental "1" *-- "0..1" Contrato : contract
+Contrato "0..*" --> "1" User : owner
+Contrato "1" *-- "0..1" ContratoCredito : credit
+ContratoCredito "0..*" --> "1" Banco : bank
+note bottom of User
+Herança JPA JOINED
+app_users → clients / agents → companies / banks
+role é o discriminador persistido.
+end note
+note bottom of Contrato
+Minuta criada na aprovação com os termos do pedido.
+executedAt preenchido na confirmação do cliente.
+O número do contrato é seu id persistente.
+end note
+@enduml

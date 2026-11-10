@@ -2,6 +2,8 @@
 
 Base: `/api`. Todas as rotas, exceto cadastro, login e obtenção de CSRF, exigem sessão autenticada. Toda escrita exige token CSRF.
 
+Na modelagem v3, cada entrada e resposta é um record em arquivo próprio no pacote `dto`. A estrutura JSON e as rotas foram preservadas. `RentalResponse` projeta os dados das entidades `Contrato` e `ContratoCredito` nos campos `bank`, `creditAmount`, `installments`, `contractNumber` e `contractedAt` já utilizados pela interface. A aprovação cria uma minuta e o número é exibido quando o cliente executa o contrato.
+
 1. `GET /auth/csrf`: retorna `token` e `headerName`; preserve o cookie de sessão.
 2. Envie o token no header informado para `POST /auth/register` (JSON) ou `POST /auth/login` (`application/x-www-form-urlencoded`, campos `username` e `password`).
 3. Após login ou logout, obtenha um novo token CSRF; o anterior é invalidado.
