@@ -15,10 +15,10 @@ public class AuthController {
     public AuthController(AccountService accounts) { this.accounts=accounts; }
     @GetMapping("/auth/csrf") public Map<String,String> csrf(CsrfToken token) { return Map.of("token",token.getToken(),"headerName",token.getHeaderName()); }
     @PostMapping("/auth/register") @ResponseStatus(HttpStatus.CREATED)
-    public Views.Owner register(@Valid @RequestBody Requests.Registration r) { return accounts.register(r); }
-    @GetMapping("/auth/me") public Views.Person me(Principal p) { return accounts.profile(p.getName()); }
-    @GetMapping("/clients/{id}") public Views.Person customer(Principal p, @PathVariable java.util.UUID id) { return accounts.customer(p.getName(),id); }
-    @PutMapping("/clients/me") public Views.Person update(Principal p, @Valid @RequestBody Requests.Profile r) { return accounts.update(p.getName(),r); }
+    public OwnerResponse register(@Valid @RequestBody RegistrationRequest r) { return accounts.register(r); }
+    @GetMapping("/auth/me") public PersonResponse me(Principal p) { return accounts.profile(p.getName()); }
+    @GetMapping("/clients/{id}") public PersonResponse customer(Principal p, @PathVariable java.util.UUID id) { return accounts.customer(p.getName(),id); }
+    @PutMapping("/clients/me") public PersonResponse update(Principal p, @Valid @RequestBody ClientProfileRequest r) { return accounts.update(p.getName(),r); }
     @DeleteMapping("/clients/me") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(Principal p, HttpServletRequest request) { accounts.delete(p.getName()); request.getSession().invalidate(); }
     @GetMapping("/owners") public Object owners(Principal p) { return accounts.owners(p.getName()); }

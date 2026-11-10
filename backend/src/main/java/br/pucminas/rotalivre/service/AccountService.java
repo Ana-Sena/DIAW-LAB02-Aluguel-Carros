@@ -18,30 +18,30 @@ public class AccountService {
     public AccountService(UserRepository users, RentalRepository rentals, VehicleRepository vehicles, PasswordEncoder encoder) {
         this.users=users; this.rentals=rentals; this.vehicles=vehicles; this.encoder=encoder;
     }
-    public Views.Owner register(Requests.Registration input) {
+    public OwnerResponse register(RegistrationRequest input) {
         String username=input.username().toLowerCase(Locale.ROOT);
         if (users.existsByUsername(username)) throw conflict("Nome de usuário já cadastrado.");
         User u=new User(); u.username=username; u.passwordHash=encoder.encode(input.password()); u.role=input.role(); u.name=input.name().trim();
-        return Views.Owner.of(users.save(u));
+        return OwnerResponse.of(users.save(u));
     }
     public User current(String username) {
         return users.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
-    public Views.Person profile(String username) { return Views.Person.of(current(username)); }
-    public Views.Person customer(String username, UUID id) {
+    public PersonResponse profile(String username) { return PersonResponse.of(current(username)); }
+    public PersonResponse customer(String username, UUID id) {
         requireAgent(current(username));
         User u=users.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Cliente não encontrado."));
         if(u.role!=Role.CLIENTE) throw bad("Usuário não é cliente.");
-        return Views.Person.of(u);
+        return PersonResponse.of(u);
     }
-    public Views.Person update(String username, Requests.Profile p) {
+    public PersonResponse update(String username, ClientProfileRequest p) {
         User u=current(username);
         if (u.role!=Role.CLIENTE) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Perfil exclusivo de cliente.");
         if (!validCpf(p.cpf())) throw bad("CPF inválido.");
         if (users.existsByCpfAndIdNot(p.cpf(),u.id)) throw conflict("CPF já cadastrado.");
         u.name=p.name().trim(); u.cpf=p.cpf(); u.rg=p.rg().trim(); u.address=p.address().trim(); u.profession=p.profession().trim();
         u.incomes.clear(); p.incomes().forEach(i -> u.incomes.add(new Income(i.employer().trim(),i.amount())));
-        return Views.Person.of(u);
+        return PersonResponse.of(u);
     }
     public void delete(String username) {
         User u=current(username);
@@ -49,7 +49,7 @@ public class AccountService {
         if (rentals.existsByCustomerId(u.id) || vehicles.existsByOwnerId(u.id)) throw conflict("Conta possui pedidos ou veículos vinculados e não pode ser excluída.");
         users.delete(u);
     }
-    public List<Views.Owner> owners(String username) { requireAgent(current(username)); return users.findAll().stream().map(Views.Owner::of).toList(); }
+    public List<OwnerResponse> owners(String username) { requireAgent(current(username)); return users.findAll().stream().map(OwnerResponse::of).toList(); }
     public static void requireAgent(User u) { if (u.role==Role.CLIENTE) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Acesso exclusivo de agentes."); }
     public static ResponseStatusException bad(String m) { return new ResponseStatusException(HttpStatus.BAD_REQUEST,m); }
     public static ResponseStatusException conflict(String m) { return new ResponseStatusException(HttpStatus.CONFLICT,m); }
