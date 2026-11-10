@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "format": "prettier --write src public index.html vite.config.js package.json",
-    "format:check": "prettier --check src public index.html vite.config.js package.json"
+    "format:check": "prettier --check src public index.html vite.config.js package.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -16,8 +18,13 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.9",
     "@vitejs/plugin-react": "^5.1.1",
+    "jsdom": "^31.0.0",
     "prettier": "^3.9.10",
-    "vite": "^7.2.2"
+    "vite": "^7.2.2",
+    "vitest": "^5.1.0"
   }
 }

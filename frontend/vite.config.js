@@ -5,4 +5,9 @@ export default defineConfig({
   plugins: [react()],
   server: { proxy: { '/api': 'http://127.0.0.1:8080' } },
   preview: { proxy: { '/api': 'http://127.0.0.1:8080' } },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+    restoreMocks: true,
+  },
 });

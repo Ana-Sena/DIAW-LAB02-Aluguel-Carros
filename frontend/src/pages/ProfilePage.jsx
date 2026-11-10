@@ -4,7 +4,7 @@ import { api } from '../services/api.js';
 import Badge from '../components/common/Badge.jsx';
 import Field from '../components/common/Field.jsx';
 
-export default function Profile({ user, setUser, action, busy, onDelete }) {
+export default function ProfilePage({ user, setUser, action, busy, onDelete }) {
   const [incomes, setIncomes] = useState(user.incomes || []);
   return (
     <div className="profile-layout">

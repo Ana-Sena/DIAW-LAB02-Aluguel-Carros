@@ -4,7 +4,7 @@ import { api, refreshCsrf } from '../services/api.js';
 import Field from '../components/common/Field.jsx';
 import VehicleArt from '../components/vehicles/VehicleArt.jsx';
 
-export default function Auth({ onLogin }) {
+export default function AuthPage({ onLogin }) {
   const [register, setRegister] = useState(false),
     [error, setError] = useState(''),
     [busy, setBusy] = useState(false);
